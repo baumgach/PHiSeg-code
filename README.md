@@ -44,10 +44,16 @@ along with and example of the generative process (left).
 In our [paper](arxiv link), we show that inference in this probabilistic model can be performed
 using a variation of the well known autoencoding variational Bayes framework. 
 
+In the paper, we show that we outperform the related probabilistic U-NET on two relevant metrics. We furthermore
+show that **taking the probabilistic perspective for the segmentation problem comes at no cost for
+segmentation accuracy!** Our method performs just as well (in fact slightly better) than a deterministic
+U-NET on the conventional Dice Score metric. 
+
+
 ## Running the code
 
-The code is implemented in Python 3.5 using using the tensorflow library. We only  tested the code
-using tensorflow 1.12. In order to run the code, follow the following steps:
+The code is implemented in Python 3.5 using using the tensorflow library. We only tested the code
+with tensorflow 1.12. In order to run the code, follow the following steps:
 
  * Set up a virtual environment (e.g. conda or virtualenv) with Python 3.5
  * Install all non-tensorflow requirements using:
