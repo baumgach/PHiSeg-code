@@ -43,9 +43,6 @@ class segvae():
             n0=exp_config.n0,
             resolution_levels=exp_config.resolution_levels,
             latent_levels=exp_config.latent_levels,
-            full_latent_dependencies=exp_config.full_latent_dependencies,
-            max_channel_power=exp_config.max_channel_power,
-            full_cov_list=self.exp_config.full_covariance_list,
             norm=exp_config.layer_norm
         )
 
@@ -59,10 +56,6 @@ class segvae():
             generation_mode=False,
             resolution_levels=exp_config.resolution_levels,
             latent_levels=exp_config.latent_levels,
-            prior_sigma_weights=exp_config.prior_sigma_weights,
-            full_latent_dependencies=exp_config.full_latent_dependencies,
-            max_channel_power=self.exp_config.max_channel_power,
-            full_cov_list=self.exp_config.full_covariance_list,
             norm=exp_config.layer_norm
         )
 
@@ -77,10 +70,6 @@ class segvae():
             scope_reuse=True,
             resolution_levels=exp_config.resolution_levels,
             latent_levels=exp_config.latent_levels,
-            prior_sigma_weights=exp_config.prior_sigma_weights,
-            full_latent_dependencies=exp_config.full_latent_dependencies,
-            max_channel_power=self.exp_config.max_channel_power,
-            full_cov_list=self.exp_config.full_covariance_list,
             norm=exp_config.layer_norm
         )
 
@@ -91,9 +80,7 @@ class segvae():
                                                      resolution_levels=exp_config.resolution_levels,
                                                      latent_levels=exp_config.latent_levels,
                                                      image_size=exp_config.image_size,
-                                                     max_channel_power=exp_config.max_channel_power,
                                                      norm=exp_config.layer_norm,
-                                                     use_logistic_transform=exp_config.use_logistic_transform,
                                                      x=self.x_inp)  # This is only needed for probUNET!
 
         self.s_out_sm_list = [None]*self.exp_config.latent_levels
@@ -108,9 +95,7 @@ class segvae():
                                                      resolution_levels=exp_config.resolution_levels,
                                                      latent_levels=exp_config.latent_levels,
                                                      image_size=exp_config.image_size,
-                                                     max_channel_power=exp_config.max_channel_power,
                                                      norm=exp_config.layer_norm,
-                                                     use_logistic_transform=exp_config.use_logistic_transform,
                                                      x=self.x_inp)   # This is only needed for probUNET!
 
         self.s_out_eval_sm_list = [None]*self.exp_config.latent_levels
@@ -242,55 +227,6 @@ class segvae():
         )
 
 
-    def KL_two_gauss_with_fully_conv_fullcov(self, mu0, L0_mat, mu1, L1_mat):
-
-        zdim = self.exp_config.zdim0
-
-        bs = self.exp_config.batch_size
-
-        cov0 = tf.matmul(L0_mat, L0_mat, transpose_b=True)
-
-        L1_inv = tf.matrix_inverse(L1_mat)
-        cov1_inv = tf.matmul(L1_inv, L1_inv, transpose_a=True) # bs x zdim x s_x*s_y x s_x*s_y
-
-        mu0_r = tf.reshape(tf.transpose(mu0, (0,3,1,2)), (bs, zdim, -1))
-        mu1_r = tf.reshape(tf.transpose(mu1, (0,3,1,2)), (bs, zdim, -1)) # bs x zdim x s_x*s_y
-
-        mu_diff = tf.expand_dims(mu1_r - mu0_r, -1) # bs x zdim x s_x*s_y x 1
-
-        trace_term = tf.trace(tf.matmul(cov1_inv, cov0))  # bs x zdim x 1
-        trace_term = tf.reduce_sum(tf.reshape(trace_term, (bs, -1)), axis=-1)  # bs x 1 (sum over all block diagonals)
-
-        logdet1_term = 2 * tf.reduce_sum(tf.log(tf.matrix_diag_part(L1_mat)), axis=(1,2))
-        logdet0_term = 2 * tf.reduce_sum(tf.log(tf.matrix_diag_part(L0_mat)), axis=(1,2))
-
-        mult_term = tf.matmul(tf.matmul(mu_diff, cov1_inv, transpose_a=True), mu_diff)  # bs x zdim x 1 x 1
-        mult_term = tf.reduce_sum(tf.reshape(mult_term, (bs, -1)), axis=1)
-
-        return tf.reduce_mean(
-            0.5*(trace_term + mult_term + logdet1_term - logdet0_term - zdim)
-        )
-
-
-
-    def bernoulli_loss(self, x_gt, y_target):
-
-        x_f = tfutils.flatten(x_gt)
-        y_f = tfutils.flatten(y_target)
-
-        return -tf.reduce_mean(
-            tf.reduce_sum(x_f * tf.log(1e-10 + y_f) + (1 - x_f) * tf.log(1e-10 + 1 - y_f), axis=1)
-        )
-
-    def bernoulli_loss_with_logits(self, x_gt, y_target):
-
-        x_f = tfutils.flatten(x_gt)
-        y_f = tfutils.flatten(y_target)
-
-        return tf.reduce_mean(
-            tf.reduce_sum(tf.nn.sigmoid_cross_entropy_with_logits(labels=x_f, logits=y_f), axis=1)
-        )
-
     def multinoulli_loss_with_logits(self, x_gt, y_target):
 
         bs = tf.shape(x_gt)[0]
@@ -300,28 +236,6 @@ class segvae():
 
         return tf.reduce_mean(
             tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits_v2(labels=x_f, logits=y_f), axis=1)
-        )
-
-
-    def add_residual_prior_z_regularisation(self):
-
-        for ii in range(self.exp_config.latent_levels-1):
-
-            self.loss_dict['residual_z_prior_regularisation_lvl%d' % ii] = self.KL_two_gauss_with_diag_cov(self.prior_mu_list[ii],
-                                                                                                           self.prior_sigma_list[ii],
-                                                                                                           self.prior_mu_list[ii+1],
-                                                                                                           self.prior_sigma_list[ii+1])
-            self.loss_tot += self.exp_config.prior_z_regularisation_weight*self.loss_dict['residual_z_prior_regularisation_lvl%d' % ii]
-
-    def gaussian_loss(self, x_gt, y_target, sigma_r):
-
-        x_f = tfutils.flatten(x_gt)
-        y_f = tfutils.flatten(y_target)
-        sigma_r_f = tfutils.flatten(sigma_r)  # we assume implicitly that network predicts sigma squared (for numerical stability)
-                                            # Thus **2 are missing in the equation below
-
-        return tf.reduce_mean(
-            tf.reduce_sum(0.5*tf.log(2*np.pi*(sigma_r_f)) + tf.divide(tf.square((x_f - y_f)), 2*(sigma_r_f)), axis=1)
         )
 
 
@@ -365,18 +279,11 @@ class segvae():
                                      reversed(self.mu_list),
                                      reversed(self.sigma_list)):
 
-            if self.exp_config.full_covariance_list[ii] == False:
-                self.loss_dict['KL_divergence_loss_lvl%d' % ii] = level_weights[ii]*self.KL_two_gauss_with_diag_cov(
-                    mu_i,
-                    sigma_i,
-                    prior_mu_list[ii],
-                    prior_sigma_list[ii])
-            else:
-                self.loss_dict['KL_divergence_loss_lvl%d' % ii] = level_weights[ii]*self.KL_two_gauss_with_fully_conv_fullcov(
-                    mu_i,
-                    sigma_i, # This will actually be the posterior L
-                    prior_mu_list[ii],
-                    prior_sigma_list[ii]) # This will be the prior L
+            self.loss_dict['KL_divergence_loss_lvl%d' % ii] = level_weights[ii]*self.KL_two_gauss_with_diag_cov(
+                mu_i,
+                sigma_i,
+                prior_mu_list[ii],
+                prior_sigma_list[ii])
 
             logging.info('Added hierarchical loss with sigma_weight=%.3f at level %d with w=%d' % (prior_sigma_weights[ii], ii, level_weights[ii]))
 

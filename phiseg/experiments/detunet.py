@@ -2,20 +2,19 @@ from phiseg.model_zoo import likelihoods, posteriors, priors
 import tensorflow as tf
 from tfwrapper import normalisation as tfnorm
 
-experiment_name = 'segvae_7_5'
+experiment_name = 'detunet'
 log_dir_name = 'lidc'
 
 # architecture
-posterior = posteriors.hybrid
-likelihood = likelihoods.hybrid
-prior = priors.hybrid
+posterior = posteriors.dummy
+likelihood = likelihoods.det_unet2D
+prior = priors.dummy
 layer_norm = tfnorm.batch_norm
-use_logistic_transform = False
 
-latent_levels = 5
+latent_levels = 1
 resolution_levels = 7
 n0 = 32
-zdim0 = 2
+zdim0 = 6
 max_channel_power = 4  # max number of channels will be n0*2**max_channel_power
 
 # Data settings
@@ -35,20 +34,15 @@ augmentation_options = {'do_flip_lr': True,
 
 # training
 optimizer = tf.train.AdamOptimizer
-lr_schedule_dict = {0: 1e-3} #, 80000: 1e-4}
-# lr_schedule_dict = {0: 1e-4, 80000: 0.5e-4, 160000: 1e-5, 240000: 0.5e-6} #  {0: 1e-3}
+lr_schedule_dict = {0: 1e-3}
 deep_supervision = True
 batch_size = 12
-# learning_rate = 1e-3
 num_iter = 5000000
-annotator_range = range(num_labels_per_subject)  # which annotators to actually use for training
+annotator_range = [0]  # which annotators to actually use for training
 
 # losses
-KL_divergence_loss_weight = 1.0
-prior_sigma_weights = [1]*resolution_levels
-full_latent_dependencies = False #True  # Use only lower level z, or all levels below
+KL_divergence_loss_weight = None
 exponential_weighting = True
-full_covariance_list = [False, False, False, False, False]
 
 residual_multinoulli_loss_weight = 1.0
 

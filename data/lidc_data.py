@@ -52,7 +52,7 @@ class lidc_data():
 if __name__ == '__main__':
 
     # If the program is called as main, perform some debugging operations
-    from phiseg.experiments import segvae_lidc_res128_hybrid as exp_config
+    from phiseg.experiments import segvae_lidc_res128_phiseg as exp_config
     data = lidc_data(exp_config)
 
     print(data.data['val']['images'].shape[0])
