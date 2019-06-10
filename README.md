@@ -86,9 +86,5 @@ as of yet.
 
 ## Code structure
 
-There are two base methods in this repository:
- * everything in the `detseg` folder implements a normal **deterministic** U-NET to use as a baseline. 
- * everything in the `phiseg` folder pertains to our proposed method
- 
-Under `phiseg/experiments` and `detseg/experiments` you will find a number of experiment config files, where the
+Under `phiseg/experiments` you will find a number of experiment config files, where the
 architecture and training details of the method are specified. Modify these files to explore different settings. 
