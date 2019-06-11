@@ -70,7 +70,10 @@ Before running the code, a number of parameters must be configured:
 
  * Open `config/system.py` and change the settings to match your system.
  
- * Download the LIDC data from [Stefan Knegt's gihub page](https://github.com/stefanknegt/Probabilistic-Unet-Pytorch).
+ * Download the LIDC data from [Stefan Knegt's gihub page](https://github.com/stefanknegt/Probabilistic-Unet-Pytorch). 
+   If you want to use your own data, you need to create an appropriate data loader (see `data/lid_data_loader.py`) 
+   and a data provider (see `data/lidc_data.py`). You also need to add
+   the dataset to `data/data_switch.py`. 
  
  * In the experiment files under `phiseg/experiments` adapt the paths for the source data and
  the target path for the preprocessd data. 
@@ -81,9 +84,9 @@ Then the code can be run using the following command:
  
  ```python phiseg_train phiseg/experiments/phiseg_7_5.py```
  
- * The easiest way to monitor training is using tensorboard
+ * The easiest way to monitor training is using tensorboard.
  
- * After training has finished, you can using `phiseg_generate_samples.py` to sample from 
+ * After training has finished, you can use `phiseg_generate_samples.py` to sample from 
  the learned distribution, and `phiseg_test_quantitative` to obtain the quantitative results
  reported in the paper. 
 
