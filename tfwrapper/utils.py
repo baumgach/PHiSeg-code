@@ -9,6 +9,7 @@ import glob
 import os
 from tensorflow.contrib.layers import variance_scaling_initializer, xavier_initializer
 import logging
+from tensorflow.python import pywrap_tensorflow
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -167,7 +168,6 @@ def put_kernels_on_grid(images, batch_size, pad=1, min_int=None, max_int=None, *
     return x
 
 
-from tensorflow.python import pywrap_tensorflow
 def print_tensornames_in_checkpoint_file(file_name):
     """ 
     """

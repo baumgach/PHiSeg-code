@@ -24,10 +24,10 @@ def main(exp_config):
     data = data_loader(exp_config)
 
     # Create Model
-    segvae = phiseg_model.segvae(exp_config)
+    phiseg = phiseg_model.phiseg(exp_config)
 
     # Fit model to data
-    segvae.train(data)
+    phiseg.train(data)
 
 if __name__ == '__main__':
 

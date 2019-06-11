@@ -5,7 +5,6 @@ import utils
 
 import numpy as np
 import os
-import shutil
 import time
 from medpy.metric import dc
 
@@ -16,7 +15,7 @@ sys_config.setup_GPU_environment()
 import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
-class segvae():
+class phiseg():
 
     def __init__(self, exp_config):
 
@@ -258,17 +257,15 @@ class segvae():
                 self.s_accum[ii] = self.s_accum[ii+1] + s_ii
                 self.loss_dict['residual_multinoulli_loss_lvl%d' % ii] = self.multinoulli_loss_with_logits(self.s_inp_oh, self.s_accum[ii])
 
+            logging.info(' -- Added residual multinoulli loss at level %d' % (ii))
+
             self.loss_tot += self.exp_config.residual_multinoulli_loss_weight * self.loss_dict['residual_multinoulli_loss_lvl%d' % ii]
 
 
     def add_hierarchical_KL_div_loss(self):
 
-        logging.info('--- hierarchical KL summary:')
-
         prior_sigma_list = self.prior_sigma_list
         prior_mu_list = self.prior_mu_list
-
-        prior_sigma_weights = self.exp_config.prior_sigma_weights
 
         if self.exp_config.exponential_weighting:
             level_weights = [4**i for i in list(range(self.exp_config.latent_levels))]
@@ -285,7 +282,7 @@ class segvae():
                 prior_mu_list[ii],
                 prior_sigma_list[ii])
 
-            logging.info('Added hierarchical loss with sigma_weight=%.3f at level %d with w=%d' % (prior_sigma_weights[ii], ii, level_weights[ii]))
+            logging.info(' -- Added hierarchical loss with at level %d with alpha_%d=%d' % (ii,ii, level_weights[ii]))
 
             self.loss_tot += self.exp_config.KL_divergence_loss_weight * self.loss_dict['KL_divergence_loss_lvl%d' % ii]
 
@@ -836,7 +833,7 @@ class segvae():
 
                 self.init_checkpoint_path = init_checkpoint_path
                 self.continue_run = True
-                self.init_step = int(self.init_checkpoint_path.split('/')[-1].split('-')[-1])-1
+                self.init_step = int(self.init_checkpoint_path.split('/')[-1].split('-')[-1])
                 self.log_dir += '_cont'
 
                 logging.info('--------------------------- Continuing previous run --------------------------------')

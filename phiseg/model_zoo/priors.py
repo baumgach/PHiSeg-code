@@ -128,4 +128,6 @@ def phiseg(z_list, x, zdim_0, n_classes, generation_mode, training, scope_reuse=
     return z, mu, sigma
 
 def dummy(z_list, x, zdim_0, n_classes, generation_mode, training, scope_reuse=False, norm=tfnorm.batch_norm, **kwargs):
-    return [None, None, None]
+    latent_levels = kwargs.get('latent_levels', 5)
+    z = mu = sigma = [tf.constant(1)]*latent_levels
+    return [z, mu, sigma]

@@ -193,12 +193,6 @@ def convert_to_uint8_rgb_fixed(image):
     image = np.clip(image, 0, 255)
     return image.astype(np.uint8)
 
-# def convert_to_uint8(image):
-#     image = image - image.min(axis=(1,2), keepdims=True)
-#     image = 255.0*np.divide(image.astype(np.float32),image.max(axis=(1,2), keepdims=True))
-#     return image.astype(np.uint8)
-
-
 def normalise_image(image):
     '''
     make image zero mean and unit standard deviation
@@ -257,57 +251,6 @@ def normalise_images(X):
 
     return X_white.astype(np.float32)
 
-
-def keep_largest_connected_components(mask):
-    '''
-    Keeps only the largest connected components of each label for a segmentation mask.
-    '''
-
-    out_img = np.zeros(mask.shape, dtype=np.uint8)
-
-    for struc_id in [1, 2, 3]:
-
-        binary_img = mask == struc_id
-        blobs = measure.label(binary_img, connectivity=1)
-
-        props = measure.regionprops(blobs)
-
-        if not props:
-            continue
-
-        area = [ele.area for ele in props]
-        largest_blob_ind = np.argmax(area)
-        largest_blob_label = props[largest_blob_ind].label
-
-        out_img[blobs == largest_blob_label] = struc_id
-
-    return out_img
-
-
-def add_motion_artefacts(img, motion=5):
-
-    tt1 = np.roll(img, motion, axis=0)
-    tt2 = img.copy()
-    tt3 = np.roll(img, -motion, axis=0)
-
-    fft1 = np.fft.fftshift(np.fft.fft2(tt1))
-    fft2 = np.fft.fftshift(np.fft.fft2(tt2))
-    fft3 = np.fft.fftshift(np.fft.fft2(tt3))
-
-    step_size = fft1.shape[0] // 3
-
-    m1 = np.zeros(fft1.shape)
-    m1[:step_size, :] = 1
-    m2 = np.zeros(fft1.shape)
-    m2[step_size:2*step_size, :] = 1
-    m3 = np.zeros(fft1.shape)
-    m3[2*step_size:, :] = 1
-
-    fftc = m1 * fft1 + m2 * fft2 + m3 * fft3
-
-    return np.real(np.fft.ifft2(np.fft.ifftshift(fftc)))
-
-
 def jaccard_onehot(pred, gt):
 
     # assuming last dimension is classes
@@ -361,10 +304,6 @@ def generalised_energy_distance(sample_arr, gt_arr, nlabels, **kwargs):
     d_ss = []
     d_yy = []
 
-    # print(N)
-    # print(M)
-    # print('--')
-
     for i in range(N):
         for j in range(M):
             # print(dist_fct(sample_arr[i,...], gt_arr[j,...]))
@@ -380,11 +319,6 @@ def generalised_energy_distance(sample_arr, gt_arr, nlabels, **kwargs):
             # print(dist_fct(gt_arr[i,...], gt_arr[j,...]))
             d_yy.append(dist_fct(gt_arr[i,...], gt_arr[j,...]))
 
-    # print((2./(N*M))*sum(d_sy))
-    # print(- (1./N**2)*sum(d_ss))
-    # print(- (1./M**2)*sum(d_yy))
-    # print('--')
-
     return (2./(N*M))*sum(d_sy) - (1./N**2)*sum(d_ss) - (1./M**2)*sum(d_yy)
 
 
@@ -396,10 +330,6 @@ def variance_ncc_dist(sample_arr, gt_arr):
 
         log_samples = np.log(m_samp + eps)
 
-        # print('m_samp seg')
-        # plt.imshow(log_samples[:,:,1])
-        # plt.show()
-        #
         return -1.0*np.sum(m_gt*log_samples, axis=-1)
 
     """
@@ -410,20 +340,11 @@ def variance_ncc_dist(sample_arr, gt_arr):
 
     mean_seg = np.mean(sample_arr, axis=0)
 
-    # print('mean seg')
-    # plt.imshow(mean_seg[:,:,1])
-    # plt.show()
-
     N = sample_arr.shape[0]
     M = gt_arr.shape[0]
 
     sX = sample_arr.shape[1]
     sY = sample_arr.shape[2]
-
-    # print(N)
-    # print(M)
-    #
-    # print('--')
 
     E_ss_arr = np.zeros((N,sX,sY))
     for i in range(N):
@@ -434,22 +355,12 @@ def variance_ncc_dist(sample_arr, gt_arr):
 
     E_ss = np.mean(E_ss_arr, axis=0)
 
-    # print('pixel wise xent')
-    # plt.figure()
-    # plt.imshow(E_ss)
-    # plt.title('Ess')
-    # plt.show()
-
     E_sy_arr = np.zeros((M,N, sX, sY))
     for j in range(M):
         for i in range(N):
             E_sy_arr[j,i, ...] = pixel_wise_xent(sample_arr[i,...], gt_arr[j,...])
 
     E_sy = np.mean(E_sy_arr, axis=1)
-    # plt.figure()
-    # plt.imshow(E_sy[0,:,:])
-    # plt.title('Esy')
-    # plt.show()
 
     ncc_list = []
     for j in range(M):

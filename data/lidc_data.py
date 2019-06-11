@@ -48,12 +48,17 @@ class lidc_data():
         self.test.images = data['test']['images']
         self.test.labels = data['test']['labels']
 
+        self.validation.images = data['val']['images']
+        self.validation.labels = data['val']['labels']
+
 
 if __name__ == '__main__':
 
     # If the program is called as main, perform some debugging operations
-    from phiseg.experiments import segvae_lidc_res128_phiseg as exp_config
+    from phiseg.experiments import phiseg_7_5 as exp_config
     data = lidc_data(exp_config)
+
+    print(data.validation.images.shape)
 
     print(data.data['val']['images'].shape[0])
     print(data.data['test']['images'].shape[0])

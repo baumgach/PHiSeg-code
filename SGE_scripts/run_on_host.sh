@@ -3,14 +3,13 @@
 # Script to send job to BIWI clusters using qsub.
 # Usage: qsub evaluate_on_host.sh PATH-TO-EXPERIMENT-LOG-DIR
 
-# Adjust line '-l hostname=xxxxx' before runing.
 # The script also requires changing the paths of the CUDA and python environments
 # and the code to the local equivalents of your machines.
 # Author: Christian F. Baumgartner (c.f.baumgartner@gmail.com)
 
 ## SET THE FOLLOWING VARIABLES ACCORDING TO YOUR SYSTEM ##
 CUDA_HOME=/scratch_net/bmicdl03/libs/cuda-9.0
-PROJECT_HOME=/scratch_net/bmicdl03/code/python/segvae/
+PROJECT_HOME=/scratch_net/bmicdl03/code/python/phiseg_public/
 VIRTUAL_ENV_PATH=/scratch_net/bmicdl03/code/python/environments/tensorflow1.12-gpu/
 
 ## SGE Variables:
@@ -32,14 +31,14 @@ VIRTUAL_ENV_PATH=/scratch_net/bmicdl03/code/python/environments/tensorflow1.12-g
 #$ -j y
 #
 # logging directory. preferably on your scratch
-#$ -o /scratch_net/bmicdl03/logs/segvae/  ## <---------------- CHANGE TO MATCH YOUR SYSTEM
+#$ -o /scratch_net/bmicdl03/logs/phiseg/  ## <---------------- CHANGE TO MATCH YOUR SYSTEM
 #
 ## send mail on job's end and abort
 #$ -m a
 
 ## LOCAL PATHS
 # I think .bashrc is not executed on the remote host if you use qsub, so you need to set all the paths
-# and environment variables before exectuting the python code.
+# and environment variables before executing the python code.
 
 # cuda paths
 export PATH=$CUDA_HOME/bin:$PATH

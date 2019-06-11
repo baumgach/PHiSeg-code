@@ -133,4 +133,6 @@ def phiseg(x, s_oh, zdim_0, training, scope_reuse=False, norm=tfnorm.batch_norm,
 
 
 def dummy(x, s_oh, zdim_0, training, scope_reuse=False, norm=tfnorm.batch_norm, **kwargs):
-    return [None, None, None]
+    latent_levels = kwargs.get('latent_levels', 5)
+    z = mu = sigma = [tf.constant(0)]*latent_levels
+    return [z, mu, sigma]
