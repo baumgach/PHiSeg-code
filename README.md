@@ -50,10 +50,10 @@ segmentation accuracy!** Our method performs just as well (in fact slightly bett
 U-NET on the conventional Dice Score metric. 
 
 
-## Running the code
+## Virtual Environment Setup
 
 The code is implemented in Python 3.5 using using the tensorflow library. We only tested the code
-with tensorflow 1.12. In order to run the code, follow the following steps:
+with tensorflow 1.12. One way of getting all the requirements is using virtualenv and the `requirements.txt` file.
 
  * Set up a virtual environment (e.g. conda or virtualenv) with Python 3.5
  * Install all non-tensorflow requirements using:
@@ -64,9 +64,22 @@ with tensorflow 1.12. In order to run the code, follow the following steps:
  
  ````pip install -r tensorflow-gpu==1.12````
 
- * Open `config/system.py` and change the settings to match your system.
+## Running the code
 
- * Start training a model by running `python phiseg_train`
+Before running the code, a number of parameters must be configured:
+
+ * Open `config/system.py` and change the settings to match your system.
+ 
+ * Download the LIDC data from [Stefan Knegt's gihub page](https://github.com/stefanknegt/Probabilistic-Unet-Pytorch).
+ 
+ * In the experiment files under `phiseg/experiments` adapt the paths for the source data and
+ the target path for the preprocessd data. 
+
+Then the code can be run using the following command:
+
+ * Start training a model by running `phiseg_train.py` with the corresponding experiment file. For example
+ 
+ ```python phiseg_train phiseg/experiments/phiseg_7_5.py```
  
  * The easiest way to monitor training is using tensorboard
  
