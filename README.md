@@ -1,14 +1,20 @@
 # PHiSeg Code
 
 Public tensorflow implementation for our paper [PHiSeg: Capturing Uncertainty in 
-Medical Image Segmentation](arxiv link) method, 
+Medical Image Segmentation](https://arxiv.org/abs/1906.04045) method, 
 which was accepted for presentation at [MICCAI 2019](https://www.miccai2019.org/). 
 
 If you find this code helpful in your research please cite the following paper:
 
 ```
-@InProceedings{baumgartner2018visual,
-TODO
+@article{PHiSeg2019Baumgartner,
+         author={Baumgartner, Christian F. and Tezcan, Kerem C. and
+         Chaitanya, Krishna and H{\"o}tker, Andreas M. and
+         Muehlematter, Urs J. and Schawkat, Khoschy and Becker, Anton S. and
+         Donati, Olivio and Konukoglu, Ender},
+         title={{PHiSeg}: Capturing Uncertainty in Medical Image Segmentation},
+         journal={arXiv:1906.04045},
+         year={2019},
 }
 ```
 
@@ -41,7 +47,7 @@ along with and example of the generative process (left).
 
 ![Method overview](figures/graphical_model.png)
 
-In our [paper](arxiv link), we show that inference in this probabilistic model can be performed
+In our [paper](https://arxiv.org/abs/1906.04045), we show that inference in this probabilistic model can be performed
 using a variation of the well known autoencoding variational Bayes framework. 
 
 In the paper, we show that we outperform the related probabilistic U-NET on two relevant metrics. We furthermore
