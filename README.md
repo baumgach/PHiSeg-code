@@ -39,7 +39,7 @@ Having access to such samples allows us to give a human user of this tool severa
 The model can also be used to determine the most likely sample according to our model, and to **visualize 
 areas of high uncertainty**. 
 
-The method functions by constructing a hierarchical probabilistic model that generates assumes 
+The method functions by constructing a hierarchical probabilistic model that assumes 
 a generative process for the segmentation s, given the image x, in which the image is constructed
 one resolution level at a time (similar to Laplacian pyramids). The generation of each resolution 
 level is assumed to be governed by a hidden, low dimensional variable z_l. Here is an image of the graphical model (right)
@@ -54,7 +54,6 @@ In the paper, we show that we outperform the related probabilistic U-NET on two 
 show that **taking the probabilistic perspective for the segmentation problem comes at no cost for
 segmentation accuracy!** Our method performs just as well (in fact slightly better) than a deterministic
 U-NET on the conventional Dice Score metric. 
-
 
 ## Virtual Environment Setup
 
