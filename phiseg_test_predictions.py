@@ -12,7 +12,7 @@ from sklearn.metrics import f1_score, classification_report, confusion_matrix
 from medpy.metric import dc, assd, hd
 
 import config.system as sys_config
-from phiseg.phiseg_model import segvae
+from phiseg.phiseg_model import phiseg
 import utils
 
 if not sys_config.running_on_gpu_host:
@@ -29,7 +29,7 @@ model_selection = 'best_dice'
 def main(model_path, exp_config, do_plots=False):
 
     # Get Data
-    segvae_model = segvae(exp_config=exp_config)
+    segvae_model = phiseg(exp_config=exp_config)
     segvae_model.load_weights(model_path, type=model_selection)
 
     data_loader = data_switch(exp_config.data_identifier)

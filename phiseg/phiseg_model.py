@@ -564,7 +564,7 @@ class phiseg():
         ged_list = []
         ncc_list = []
 
-        N = data.validation.images.shape[0]
+        N = data.validation.images.shape[0] if self.exp_config.num_validation_images == 'all' else self.exp_config.num_validation_images
 
         for ii in range(N):
 

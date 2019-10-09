@@ -11,7 +11,7 @@ import numpy as np
 import config.system as sys_config
 import utils
 from data.data_switch import data_switch
-from phiseg.phiseg_model import segvae
+from phiseg.phiseg_model import phiseg
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -86,8 +86,8 @@ def generate_error_maps(sample_arr, gt_arr):
 def main(model_path, exp_config):
 
     # Make and restore vagan model
-    segvae_model = segvae(exp_config=exp_config)
-    segvae_model.load_weights(model_path, type=model_selection)
+    phiseg_model = phiseg(exp_config=exp_config)
+    phiseg_model.load_weights(model_path, type=model_selection)
 
     data_loader = data_switch(exp_config.data_identifier)
     data = data_loader(exp_config)
@@ -128,7 +128,7 @@ def main(model_path, exp_config):
         print('Generating 100 samples')
         s_p_list = []
         for kk in range(100):
-            s_p_list.append(segvae_model.predict_segmentation_sample(x_b, return_softmax=True))
+            s_p_list.append(phiseg_model.predict_segmentation_sample(x_b, return_softmax=True))
         s_p_arr = np.squeeze(np.asarray(s_p_list))
 
 

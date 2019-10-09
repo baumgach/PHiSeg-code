@@ -18,7 +18,7 @@ VIRTUAL_ENV_PATH=/scratch_net/bmicdl03/code/python/environments/tensorflow1.12-g
 #$ -S /bin/bash
 #
 ## <= 2h is short queue, <= 24h is middle queue, <= 120h is long queue
-#$ -l h_rt=24:00:00
+#$ -l h_rt=48:00:00
 
 ## the maximum memory usage of this job, (below 4G does not make much sense)
 #$ -l h_vmem=40G  # Less RAM is required for evaluating than for training

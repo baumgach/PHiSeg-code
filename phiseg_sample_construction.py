@@ -10,7 +10,7 @@ import numpy as np
 import config.system as sys_config
 import utils
 from data.data_switch import data_switch
-from phiseg.phiseg_model import segvae
+from phiseg.phiseg_model import phiseg
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
@@ -23,7 +23,7 @@ def findsubsets(S,m):
 def main(model_path, exp_config):
 
     # Make and restore vagan model
-    segvae_model = segvae(exp_config=exp_config)
+    segvae_model = phiseg(exp_config=exp_config)
     segvae_model.load_weights(model_path, type='best_dice')
 
     data_loader = data_switch(exp_config.data_identifier)

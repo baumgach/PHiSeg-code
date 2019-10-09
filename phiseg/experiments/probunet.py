@@ -52,5 +52,6 @@ do_image_summaries = True
 rescale_RGB = False
 validation_frequency = 500
 validation_samples = 16
+num_validation_images = 100 #'all'
 tensorboard_update_frequency = 100
 
