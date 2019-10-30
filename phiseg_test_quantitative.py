@@ -8,15 +8,10 @@ import os
 import glob
 from importlib.machinery import SourceFileLoader
 import argparse
-from sklearn.metrics import f1_score, classification_report, confusion_matrix
-from medpy.metric import dc, assd, hd
 
 import config.system as sys_config
 from phiseg.phiseg_model import phiseg
 import utils
-
-if not sys_config.running_on_gpu_host:
-    import matplotlib.pyplot as plt
 
 import logging
 from data.data_switch import data_switch
@@ -30,8 +25,8 @@ def main(model_path, exp_config, do_plots=False):
     model_selection = 'best_ged'
 
     # Get Data
-    segvae_model = phiseg(exp_config=exp_config)
-    segvae_model.load_weights(model_path, type=model_selection)
+    phiseg_model = phiseg(exp_config=exp_config)
+    phiseg_model.load_weights(model_path, type=model_selection)
 
     data_loader = data_switch(exp_config.data_identifier)
     data = data_loader(exp_config)
@@ -52,11 +47,11 @@ def main(model_path, exp_config, do_plots=False):
         x_b_stacked = np.tile(x_b, [n_samples, 1, 1, 1])
 
         feed_dict = {}
-        feed_dict[segvae_model.training_pl] = False
-        feed_dict[segvae_model.x_inp] = x_b_stacked
+        feed_dict[phiseg_model.training_pl] = False
+        feed_dict[phiseg_model.x_inp] = x_b_stacked
 
 
-        s_arr_sm = segvae_model.sess.run(segvae_model.s_out_eval_sm, feed_dict=feed_dict)
+        s_arr_sm = phiseg_model.sess.run(phiseg_model.s_out_eval_sm, feed_dict=feed_dict)
         s_arr = np.argmax(s_arr_sm, axis=-1)
 
         # s_arr = np.squeeze(np.asarray(s_list)) # num samples x X x Y
@@ -84,7 +79,6 @@ def main(model_path, exp_config, do_plots=False):
 
     np.savez(os.path.join(model_path, 'ged%s_%s.npz' % (str(n_samples), model_selection)), ged_arr)
     np.savez(os.path.join(model_path, 'ncc%s_%s.npz' % (str(n_samples), model_selection)), ncc_arr)
-
 
 
 if __name__ == '__main__':

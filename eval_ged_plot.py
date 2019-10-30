@@ -5,62 +5,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from scipy import stats
 
-# PROSTATE GED 100 samps
-# experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/uzh_prostate/'
-# experiment_list = ['probUNET_bs12_zdim6',
-#                    'segvae_7_1_bs12',
-#                    'segvae_7_5_bs12_cont',
-#                    'probUNET_bs12_zdim6_1annotator',
-#                    'segvae_7_1_bs12_1annotator',
-#                    'segvae_7_5_bs12_1annotator']
-# experiment_names = ['ProbUNET','SegVAE_1lvls', 'SegVAE_5lvls','ProbUNET_1annot', 'SegVAE_1lvls_1annot', 'SegVAE_5lvls_1annot']
-# file_list = ['ged100_best_loss.npz']*len(experiment_list)
-
-# PROSTATE GED 100 samps
-# experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/uzh_prostate_twolbl/'
-# experiment_list = ['probUNET',
-#                    'segvae_7_1',
-#                    'segvae_7_5',
-#                    'probUNET_1annotator_rerun_wd',
-#                    'segvae_7_1_1annot',
-#                    'segvae_7_5_1annot']
-# experiment_names = ['ProbUNET','SegVAE_1lvls', 'SegVAE_5lvls','ProbUNET_1annot', 'SegVAE_1lvls_1annot', 'SegVAE_5lvls_1annot']
-# file_list = ['ged100_best_loss.npz']*len(experiment_list)
-# file_list[-1] = 'ged100_best_dice.npz'
-
-# LIDC GED 100 samps
-# experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/'
-# experiment_list = ['final_res128_probunet_bn_bs12_zdim6',
-#                    'final_res128_hybrid_7_1_rerun', #'final_res128_hybrid_7_1_rerun',
-#                    'final_res128_hybrid_7_5_bs12_partdep',
-#                    'final_res128_probunet_1annotator/',
-#                    'final_res128_hybrid_7_1_1annotator',
-#                    'final_res128_hybrid_7_5_bs12_partdep_1annotator/']
-# experiment_names = ['ProbUNET','SegVAE_1lvls', 'SegVAE_5lvls','ProbUNET_1annot', 'SegVAE_1lvls_1annot', 'SegVAE_5lvls_1annot']
-# file_list = ['ged100_best_loss.npz']*len(experiment_list)
-
-
-# experiment_list = ['final_res128_hybrid_7_1_bs12']
-# experiment_names = ['SegVAE_1lvl']
-
-# LIDC RERUN
-# experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/'
-# experiment_list = ['probunet',
-#                    'segvae_7_1',
-#                    'segvae_7_5',
-#                    'probunet_1annot',
-#                    'segvae_7_1_1annot',
-#                    'segvae_7_5_1annot']
-# experiment_names = ['ProbUNET','SegVAE_1lvls', 'SegVAE_5lvls','ProbUNET_1annot', 'SegVAE_1lvls_1annot', 'SegVAE_5lvls_1annot']
-# file_list = ['ged100_best_loss.npz']*len(experiment_list)
-
-# PROSTATE GED 100 samps (AFTER MICCAI)
-experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/uzh_prostate_afterpaper/'
-experiment_list = ['probUNET',
-                   'segvae_7_5',
-                   'probUNET_1annotator_2',
-                   'segvae_7_5_1annot']
-experiment_names = ['ProbUNET', 'SegVAE_5lvls','ProbUNET_1annot', 'SegVAE_5lvls_1annot']
+experiment_base_folder = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/'
+experiment_list = ['probunet',
+                   'phiseg_7_1',
+                   'phiseg_7_5',
+                   'probunet_1annot',
+                   'phiseg_7_1_1annot',
+                   'phiseg_7_5_1annot']
+experiment_names = ['probunet','phiseg_7_1', 'phiseg_7_5', 'probunet_1annot', 'phiseg_7_1_1annot', 'phiseg_7_5_1annot']
 file_list = ['ged100_best_ged.npz']*len(experiment_list)
 
 

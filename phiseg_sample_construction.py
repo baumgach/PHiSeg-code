@@ -23,8 +23,8 @@ def findsubsets(S,m):
 def main(model_path, exp_config):
 
     # Make and restore vagan model
-    segvae_model = phiseg(exp_config=exp_config)
-    segvae_model.load_weights(model_path, type='best_dice')
+    phiseg_model = phiseg(exp_config=exp_config)
+    phiseg_model.load_weights(model_path, type='best_dice')
 
     data_loader = data_switch(exp_config.data_identifier)
     data = data_loader(exp_config)
@@ -70,7 +70,7 @@ def main(model_path, exp_config):
 
         print(ss)
 
-        s_p_list = segvae_model.predict_segmentation_sample_levels(x_b, return_softmax=False)
+        s_p_list = phiseg_model.predict_segmentation_sample_levels(x_b, return_softmax=False)
 
         accum_list = [None]*exp_config.latent_levels
         accum_list[exp_config.latent_levels-1] = s_p_list[-1]
@@ -150,20 +150,8 @@ if __name__ == '__main__':
 
     # exp_path = args.EXP_PATH
 
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc/res128_probunet_exact_replication_bs32'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc/rr_res128_hybrid_7_5_partlat_probunetopt_bs32'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc/rr_res128_hybrid_7_5_partlat_probunetopt_bs32_logistic'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc/res128_probunet_debugged'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc/res128_hybrid_7_5_latentpart'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc192/final_res192_hybrid_7_5_bs12'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc192/final_res192_hybrid_7_5_bs12_partdep'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/acdc192/final_res128_probunet_bn_bs12'
-
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/res128_hybrid_7_5_partlat_probunetopt_bs32_logistic_cont'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/final_res128_probunet_bn_bs12'
-    # exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/lidc/final_res128_hybrid_7_5_bs12
     #
-    exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/uzh_prostate/segvae_7_5_bs12_cont'
+    exp_path = '/itet-stor/baumgach/net_scratch/logs/phiseg/uzh_prostate/phiseg_7_5'
 
     model_path = os.path.join(base_path, exp_path)
     config_file = glob.glob(model_path + '/*py')[0]

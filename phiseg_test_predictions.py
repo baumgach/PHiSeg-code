@@ -8,8 +8,7 @@ import os
 import glob
 from importlib.machinery import SourceFileLoader
 import argparse
-from sklearn.metrics import f1_score, classification_report, confusion_matrix
-from medpy.metric import dc, assd, hd
+from medpy.metric import dc
 
 import config.system as sys_config
 from phiseg.phiseg_model import phiseg
@@ -29,8 +28,8 @@ model_selection = 'best_dice'
 def main(model_path, exp_config, do_plots=False):
 
     # Get Data
-    segvae_model = phiseg(exp_config=exp_config)
-    segvae_model.load_weights(model_path, type=model_selection)
+    phiseg_model = phiseg(exp_config=exp_config)
+    phiseg_model.load_weights(model_path, type=model_selection)
 
     data_loader = data_switch(exp_config.data_identifier)
     data = data_loader(exp_config)
@@ -56,7 +55,7 @@ def main(model_path, exp_config, do_plots=False):
         # Add box corruption
         # x[:, 192 // 2 - 20:192 // 2 + 20, 192 // 2 - 5:192 // 2 + 5, :] = 0
 
-        y_ = np.squeeze(segvae_model.predict(x, num_samples=num_samples))
+        y_ = np.squeeze(phiseg_model.predict(x, num_samples=num_samples))
 
         per_lbl_dice = []
         per_pixel_preds = []
