@@ -34,7 +34,7 @@ nbconvert==5.3.1
 nbformat==4.4.0
 networkx==2.1
 nibabel==2.3.0
-notebook==5.6.0
+notebook==5.7.8
 numpy==1.14.5
 opencv-contrib-python==3.4.3.18
 pandas==0.20.3
