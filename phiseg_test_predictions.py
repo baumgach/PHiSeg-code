@@ -48,13 +48,6 @@ def main(model_path, exp_config, do_plots=False):
 
         x, y = batch
 
-        # Adding motion corrpution
-        # x = utils.add_motion_artefacts(np.squeeze(x), 15)
-        # x = x.reshape([1] + list(exp_config.image_size))
-
-        # Add box corruption
-        # x[:, 192 // 2 - 20:192 // 2 + 20, 192 // 2 - 5:192 // 2 + 5, :] = 0
-
         y_ = np.squeeze(phiseg_model.predict(x, num_samples=num_samples))
 
         per_lbl_dice = []
