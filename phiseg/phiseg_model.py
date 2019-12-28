@@ -114,14 +114,34 @@ class phiseg():
         self.loss_dict = {}
         self.loss_tot = 0
 
+        self.neg_elbo = 0
+        self.neg_elbo_dict = {}
+
+
         logging.info('ADDING LOSSES')
         if hasattr(self.exp_config, 'residual_multinoulli_loss_weight') and exp_config.residual_multinoulli_loss_weight is not None:
             logging.info(' - Adding residual multinoulli loss')
             self.add_residual_multinoulli_loss()
 
+            logging.info(' - Adding residual multinoulli loss to ELBO')
+            self.neg_elbo += self.multinoulli_loss_with_logits(self.s_inp_oh, tf.math.round(self.s_out))
+
         if hasattr(self.exp_config, 'KL_divergence_loss_weight') and exp_config.KL_divergence_loss_weight is not None:
             logging.info(' - Adding hierarchical KL loss')
-            self.add_hierarchical_KL_div_loss()
+            self.loss_tot, self.loss_dict = self.add_hierarchical_KL_div_loss(self.loss_tot,
+                                                                              self.loss_dict,
+                                                                              self.prior_mu_list,
+                                                                              self.prior_sigma_list,
+                                                                              self.mu_list,
+                                                                              self.sigma_list)
+
+            logging.info(' - Adding hierarchical KL loss to ELBO')
+            self.neg_elbo, self.neg_elbo_dict = self.add_hierarchical_KL_div_loss(self.neg_elbo,
+                                                                                  self.neg_elbo_dict,
+                                                                                  self.prior_mu_list,
+                                                                                  self.prior_sigma_list,
+                                                                                  self.mu_list,
+                                                                                  self.sigma_list)
 
         if hasattr(self.exp_config, 'weight_decay_weight') and exp_config.weight_decay_weight is not None:
             logging.info(' - Adding weight decay')
@@ -262,10 +282,8 @@ class phiseg():
             self.loss_tot += self.exp_config.residual_multinoulli_loss_weight * self.loss_dict['residual_multinoulli_loss_lvl%d' % ii]
 
 
-    def add_hierarchical_KL_div_loss(self):
+    def add_hierarchical_KL_div_loss(self, loss, loss_dict, prior_mu_list, prior_sigma_list, mu_list, sigma_list):
 
-        prior_sigma_list = self.prior_sigma_list
-        prior_mu_list = self.prior_mu_list
 
         if self.exp_config.exponential_weighting:
             level_weights = [4**i for i in list(range(self.exp_config.latent_levels))]
@@ -273,10 +291,10 @@ class phiseg():
             level_weights = [1]*self.exp_config.latent_levels
 
         for ii, mu_i, sigma_i in zip(reversed(range(self.exp_config.latent_levels)),
-                                     reversed(self.mu_list),
-                                     reversed(self.sigma_list)):
+                                     reversed(mu_list),
+                                     reversed(sigma_list)):
 
-            self.loss_dict['KL_divergence_loss_lvl%d' % ii] = level_weights[ii]*self.KL_two_gauss_with_diag_cov(
+            loss_dict['KL_divergence_loss_lvl%d' % ii] = level_weights[ii]*self.KL_two_gauss_with_diag_cov(
                 mu_i,
                 sigma_i,
                 prior_mu_list[ii],
@@ -284,7 +302,9 @@ class phiseg():
 
             logging.info(' -- Added hierarchical loss with at level %d with alpha_%d=%d' % (ii,ii, level_weights[ii]))
 
-            self.loss_tot += self.exp_config.KL_divergence_loss_weight * self.loss_dict['KL_divergence_loss_lvl%d' % ii]
+            loss += self.exp_config.KL_divergence_loss_weight * loss_dict['KL_divergence_loss_lvl%d' % ii]
+
+        return loss, loss_dict
 
 
     def add_weight_decay(self):
@@ -351,6 +371,22 @@ class phiseg():
             return np.argmax(cumsum_sm, axis=-1), cumsum_sm / num_samples
 
         return np.argmax(cumsum_sm, axis=-1)
+
+
+    def predict_elbo(self, x_in, s, num_samples=10):
+
+        feed_dict = {}
+        feed_dict[self.training_pl] = False
+        feed_dict[self.x_inp] = x_in
+        feed_dict[self.s_inp] = s
+
+        cumsum_sm = 0
+
+        for i in range(num_samples):
+            neg_elbo = self.sess.run(self.neg_elbo, feed_dict=feed_dict)
+            cumsum_sm += neg_elbo
+
+        return -cumsum_sm / num_samples
 
 
     def predict_segmentation_sample(self, x_in, return_softmax=False):
