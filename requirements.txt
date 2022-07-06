@@ -12,7 +12,7 @@ entrypoints==0.2.3
 gast==0.2.0
 grpcio==1.13.0
 h5py==2.8.0
-html5lib==0.9999999
+html5lib==0.999999999
 ipykernel==4.9.0
 ipython==6.4.0
 ipython-genutils==0.2.0
