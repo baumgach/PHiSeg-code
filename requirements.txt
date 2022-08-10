@@ -30,7 +30,7 @@ MarkupSafe==1.0
 matplotlib==2.2.2
 -e git+https://github.com/lmkoch/medpy/@b06b6decf41c63489e746f6a83e8fa5ff509adfa#egg=MedPy
 mistune==0.8.3
-nbconvert==5.3.1
+nbconvert==6.3.0
 nbformat==4.4.0
 networkx==2.1
 nibabel==2.3.0
